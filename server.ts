@@ -115,7 +115,12 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 async function initializeServer() {
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      // The Express server owns the HTTP listener, so Vite cannot safely
+      // attach its HMR WebSocket upgrade handler here.
+      server: {
+        middlewareMode: true,
+        hmr: false,
+      },
       appType: "spa",
     });
     app.use(vite.middlewares);
